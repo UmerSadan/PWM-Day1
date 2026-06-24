@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muhammad Umer Sadan | Core Tech Portfolio</title>
+    <style>
+        /* ===========================================================
+           PAINTERLY PALETTE
+           Dark = "Midnight Aurora": deep indigo canvas, sunset-orange
+           and electric-violet accents.
+           Light = "Sunlit Canvas": warm cream canvas, punchy coral
+           and violet accents — same family, re-tuned for contrast.
+           =========================================================== */
+        :root,
+        html.dark {
+            --bg-dark: #0b0712;
+            --wood-deep: #160f22;
+            --wood-medium: #2a1c43;
+            --wood-light: #4a3270;
+            --wood-glow: #ff7a45;
+            --wood-glow-rgb: 255, 122, 69;
+            --accent2: #7c5cff;
+            --accent2-rgb: 124, 92, 255;
+            --text-bright: #fdf6f0;
+            --text-muted: #b3a6c4;
+            --panel-bg: rgba(22, 15, 34, 0.92);
+            --border-subtle: #2b2040;
+            --nav-bg: rgba(11, 7, 18, 0.7);
+            --color-scheme: dark;
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Light Mode Overrides */
+        html.light {
+            --bg-dark: #fdf6ee;
+            --wood-deep: #fbe9da;
+            --wood-medium: #f6d9c2;
+            --wood-light: #ecbd92;
+            --wood-glow: #e0501f;
+            --wood-glow-rgb: 224, 80, 31;
+            --accent2: #6a3fd6;
+            --accent2-rgb: 106, 63, 214;
+            --text-bright: #261a33;
+            --text-muted: #6e5d77;
+            --panel-bg: rgba(255, 255, 255, 0.88);
+            --border-subtle: #f0d9bf;
+            --nav-bg: rgba(253, 246, 238, 0.75);
+            --color-scheme: light;
+        }
+
+        html {
+            color-scheme: var(--color-scheme, dark);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-bright);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            transition: var(--transition-smooth);
+        }
+
+        /* Painterly Color-Bloom Backdrop — soft drifting gradient blooms
+           that give the canvas an artistic, hand-painted depth */
+        .bg-paint {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+            pointer-events: none;
+            overflow: hidden;
+            transition: opacity 0.6s ease;
+        }
+
+        .bg-paint span {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: 0.35;
+            will-change: transform;
+        }
+
+        .bg-paint .blob-1 {
+            width: 38vw;
+            height: 38vw;
+            top: -8%;
+            left: -6%;
+            background: radial-gradient(circle, var(--wood-glow), transparent 70%);
+            animation: drift1 26s ease-in-out infinite;
+        }
+
+        .bg-paint .blob-2 {
+            width: 42vw;
+            height: 42vw;
+            top: 35%;
+            right: -10%;
+            background: radial-gradient(circle, var(--accent2), transparent 70%);
+            animation: drift2 32s ease-in-out infinite;
+        }
+
+        .bg-paint .blob-3 {
+            width: 30vw;
+            height: 30vw;
+            bottom: -10%;
+            left: 20%;
+            background: radial-gradient(circle, var(--wood-glow), transparent 70%);
+            opacity: 0.22;
+            animation: drift3 38s ease-in-out infinite;
+        }
+
+        @keyframes drift1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(6vw, 8vh) scale(1.15); }
+        }
+
+        @keyframes drift2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-7vw, -5vh) scale(1.1); }
+        }
+
+        @keyframes drift3 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(4vw, -6vh) scale(1.2); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .bg-paint span { animation: none; }
+        }
+
+        /* Hyper-Premium 3D Isometric Wood Matrix Background (static structural grid) */
+        .bg-matrix {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                linear-gradient(var(--border-subtle) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
+            background-size: 60px 60px;
+            transform: perspective(600px) rotateX(60deg) translateY(-10%);
+            z-index: -2;
+            opacity: 0.25;
+            pointer-events: none;
+        }
+
+        /* Interactive Floating-Node Canvas Background */
+        #particles-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+            pointer-events: none;
+            mix-blend-mode: difference;
+            transition: opacity 0.6s ease;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+        }
+
+        /* Sticky Minimalist Navbar */
+        nav {
+            position: sticky;
+            top: 0;
+            background: var(--nav-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle);
+            z-index: 1000;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-bright);
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--wood-glow);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-links a:hover {
+            color: var(--text-bright);
+        }
+
+        /* Theme Toggle CSS Switch */
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-subtle);
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            color: var(--text-bright);
+            transition: var(--transition-smooth);
+        }
+
+        .theme-toggle:hover {
+            background: var(--wood-deep);
+            border-color: var(--wood-glow);
+        }
+
+        /* Hero Section */
+        #hero {
+            padding: 8rem 0 6rem 0;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .hero-text p {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            max-width: 580px;
+        }
+
+        /* Premium Buttons */
+        .cta-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.85rem 2rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.15s ease, border-color 0.4s ease, box-shadow 0.4s ease, color 0.4s ease, background 0.4s ease;
+            cursor: pointer;
+            will-change: transform;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--wood-glow), var(--accent2));
+            color: #fff;
+            border: 1px solid transparent;
+            box-shadow: 0 4px 16px rgba(var(--wood-glow-rgb), 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+
+        .btn-primary:hover {
+            border-color: transparent;
+            box-shadow: 0 10px 26px rgba(var(--wood-glow-rgb), 0.4), 0 6px 18px rgba(var(--accent2-rgb), 0.25);
+            filter: brightness(1.07);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .btn-secondary:hover {
+            color: var(--text-bright);
+            border-color: var(--text-muted);
+        }
+
+        /* Magnetic wrapper keeps layout stable while inner element translates */
+        .magnetic {
+            position: relative;
+            display: inline-flex;
+        }
+
+        /* 3D Structural Frame Placeholder for Image */
+        .tilt-wrap {
+            perspective: 1000px;
+        }
+
+        .hero-frame {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-style: preserve-3d;
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform;
+            cursor: pointer;
+        }
+
+        /* Interactive rotating wireframe cube — the "engineering architecture" centerpiece */
+        .iso-stage {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 700px;
+            z-index: 1;
+        }
+
+        .iso-cube {
+            position: relative;
+            width: 86px;
+            height: 86px;
+            transform-style: preserve-3d;
+            transform: rotateX(-25deg) rotateY(35deg);
+            animation: cubeSpin 16s linear infinite;
+            transition: transform 0.4s ease-out;
+        }
+
+        .iso-cube.manual {
+            animation-play-state: paused;
+        }
+
+        .iso-cube .face {
+            position: absolute;
+            width: 86px;
+            height: 86px;
+            border: 1px solid var(--wood-glow);
+            background: rgba(var(--wood-glow-rgb), 0.07);
+            box-shadow: inset 0 0 24px rgba(var(--wood-glow-rgb), 0.18);
+        }
+
+        .iso-cube .face::before {
+            content: "";
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 6px; height: 6px;
+            margin: -3px;
+            border-radius: 50%;
+            background: var(--wood-glow);
+            box-shadow: 0 0 10px rgba(var(--wood-glow-rgb), 0.9);
+            animation: nodePulse 2.4s ease-in-out infinite;
+        }
+
+        .face.front  { transform: translateZ(43px); }
+        .face.back   { transform: translateZ(-43px) rotateY(180deg); }
+        .face.right  { transform: rotateY(90deg) translateZ(43px); }
+        .face.left   { transform: rotateY(-90deg) translateZ(43px); }
+        .face.top    { transform: rotateX(90deg) translateZ(43px); }
+        .face.bottom { transform: rotateX(-90deg) translateZ(43px); }
+
+        @keyframes cubeSpin {
+            from { transform: rotateX(-25deg) rotateY(0deg); }
+            to   { transform: rotateX(-25deg) rotateY(360deg); }
+        }
+
+        @keyframes nodePulse {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.6); }
+        }
+
+        /* Scroll Animations Utility classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Sections Universal Styling */
+        section {
+            padding: 6rem 0;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(120deg, var(--wood-glow), var(--accent2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-title::after {
+            content: "";
+            flex-grow: 1;
+            height: 1px;
+            background: var(--border-subtle);
+        }
+
+        /* About & Block Grid Framework */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .about-left p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .skills-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .skill-item {
+            width: 100%;
+        }
+
+        .skill-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .skill-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: var(--wood-deep);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .skill-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--wood-glow), var(--accent2));
+            width: 0;
+            transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Portfolio Cards Grid */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .tilt-wrap.card-tilt-wrap {
+            perspective: 1200px;
+        }
+
+        /* Block Card Aesthetic (Wood & Deep Shadows) */
+        .block-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-subtle);
+            border-bottom: 4px solid var(--wood-medium);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, border-bottom-color 0.4s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            transform-style: preserve-3d;
+            will-change: transform;
+            height: 100%;
+        }
+
+        .block-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 8px;
+            background: radial-gradient(circle at var(--glow-x, 50%) var(--glow-y, 50%), rgba(var(--wood-glow-rgb), 0.15), transparent 65%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .block-card.tilting {
+            border-color: var(--wood-light);
+            border-bottom-color: var(--wood-glow);
+            box-shadow: 0 20px 40px rgba(var(--wood-glow-rgb), 0.15);
+        }
+
+        .block-card.tilting::before {
+            opacity: 1;
+        }
+
+        .card-top {
+            transform: translateZ(20px);
+        }
+
+        .card-top h3 {
+            font-size: 1.3rem;
+            color: var(--text-bright);
+            margin-bottom: 0.75rem;
+        }
+
+        .card-top p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tech-tag {
+            font-family: monospace;
+            font-size: 0.75rem;
+            background: var(--wood-deep);
+            color: var(--wood-glow);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        /* Slide Component (Testimonials) */
+        .slider-wrapper {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 3rem;
+        }
+
+        .testimonial-slide {
+            display: none;
+            animation: fade 0.6s ease;
+        }
+
+        .testimonial-slide.active {
+            display: block;
+        }
+
+        .testimonial-slide q {
+            font-size: 1.25rem;
+            color: var(--text-bright);
+            font-style: italic;
+            display: block;
+            margin-bottom: 1.5rem;
+        }
+
+        .testimonial-slide cite {
+            color: var(--wood-glow);
+            font-style: normal;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .slider-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            justify-content: flex-end;
+        }
+
+        @keyframes fade {
+            from { opacity: 0; transform: translateX(10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Clean Contact Form Structure */
+        .contact-layout {
+            display: grid;
+            grid-template-columns: 0.8fr 1.2fr;
+            gap: 4rem;
+        }
+
+        .contact-info p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .contact-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .contact-links a {
+            color: var(--text-bright);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+        }
+
+        .contact-links a:hover {
+            color: var(--wood-glow);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        form input, form textarea {
+            background: var(--wood-deep);
+            border: 1px solid var(--border-subtle);
+            padding: 1rem;
+            color: var(--text-bright);
+            border-radius: 6px;
+            font-family: inherit;
+            transition: var(--transition-smooth);
+        }
+
+        form input:focus, form textarea:focus {
+            outline: none;
+            border-color: var(--wood-glow);
+            background: var(--bg-dark);
+        }
+
+        footer {
+            border-top: 1px solid var(--border-subtle);
+            padding: 3rem 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Reduced motion / accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            #particles-bg { display: none; }
+            .block-card, .hero-frame, .magnetic > * {
+                transition: none !important;
+                transform: none !important;
+            }
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 900px) {
+            #hero { grid-template-columns: 1fr; text-align: center; gap: 3rem; }
+            .hero-text p { margin: 0 auto 2.5rem auto; }
+            .cta-group { justify-content: center; }
+            .hero-frame { max-width: 400px; margin: 0 auto; }
+            .about-grid, .contact-layout { grid-template-columns: 1fr; gap: 3rem; }
+        }
+
+        @media (max-width: 600px) {
+            #particles-bg { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-paint" aria-hidden="true">
+        <span class="blob-1"></span>
+        <span class="blob-2"></span>
+        <span class="blob-3"></span>
+    </div>
+    <div class="bg-matrix"></div>
+    <canvas id="particles-bg"></canvas>
+
+    <!-- Minimalist Navigation Bar -->
+    <nav>
+        <div class="container nav-container">
+            <a href="#" class="logo">Umer<span>.Sadan</span></a>
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#portfolio">Projects</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li>
+                    <button class="theme-toggle" id="themeBtn" aria-label="Toggle Theme">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.364 17.636l-.707.707M17.364 17.636l.707.707M6.364 6.364l.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Frame Unit -->
+    <header class="container" id="hero">
+        <div class="hero-text">
+            <h1>Engineered for <br><span style="background: linear-gradient(120deg, var(--wood-glow), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent;">Architectural Impact</span></h1>
+            <p>I am Muhammad Umer Sadan, a software developer specialization-focused in low-level systems execution, structural algorithms, and deterministic full-stack engineering frameworks.</p>
+            <div class="cta-group">
+                <span class="magnetic"><a href="#contact" class="btn btn-primary magnetic-target">Initiate Contact</a></span>
+                <span class="magnetic"><a href="#portfolio" class="btn btn-secondary magnetic-target">View Pipeline</a></span>
+            </div>
+        </div>
+        <div class="tilt-wrap">
+            <div class="hero-frame" id="heroFrame">
+                <div class="iso-stage">
+                    <div class="iso-cube" id="isoCube">
+                        <div class="face front"></div>
+                        <div class="face back"></div>
+                        <div class="face right"></div>
+                        <div class="face left"></div>
+                        <div class="face top"></div>
+                        <div class="face bottom"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- About Module & Skill Bars -->
+    <section id="about" class="container reveal">
+        <h2 class="section-title">01 / Profile Overview</h2>
+        <div class="about-grid">
+            <div class="about-left">
+                <p>I operate at the intersection of systematic computation and functional optimization. My engineering baseline emphasizes clean architectures, programmatic optimization thresholds, and logical execution pipelines.</p>
+                <p>From low-level microcode configuration limits up to production web platforms, I focus on building resilient, performance-mapped software products.</p>
+            </div>
+            <div class="skills-container">
+                <div class="skill-item">
+                    <div class="skill-info"><span>Low-Level Architecture (Assembly, C++)</span><span>95%</span></div>
+                    <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="95%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-info"><span>Full-Stack Development (MERN Stack)</span><span>90%</span></div>
+                    <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="90%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-info"><span>Algorithmic Optimization &amp; Complex DS</span><span>88%</span></div>
+                    <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="88%"></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Grid Deployment -->
+    <section id="portfolio" class="container reveal">
+        <h2 class="section-title">02 / Selected Repositories</h2>
+        <div class="portfolio-grid">
+
+            <!-- Card 1 -->
+            <div class="tilt-wrap card-tilt-wrap">
+                <div class="block-card" data-tilt>
+                    <div class="card-top">
+                        <h3>Full-Stack CRUD Core</h3>
+                        <p>Production-ready management hub utilizing decoupled modular state architectures, strict API controllers, and schema verification schemas.</p>
+                        <div class="tech-tags">
+                            <span class="tech-tag">MongoDB</span>
+                            <span class="tech-tag">Express</span>
+                            <span class="tech-tag">React</span>
+                            <span class="tech-tag">Node</span>
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem; width: max-content; transform: translateZ(20px);">Inspect Source</a>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="tilt-wrap card-tilt-wrap">
+                <div class="block-card" data-tilt>
+                    <div class="card-top">
+                        <h3>Direct Assembly Engine</h3>
+                        <p>Low-level structural environment utilizing register manipulation and custom execution routines mapped for runtime optimization cycles.</p>
+                        <div class="tech-tags">
+                            <span class="tech-tag">x86 Assembly</span>
+                            <span class="tech-tag">Low-Level</span>
+                            <span class="tech-tag">NASM</span>
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem; width: max-content; transform: translateZ(20px);">Inspect Source</a>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="tilt-wrap card-tilt-wrap">
+                <div class="block-card" data-tilt>
+                    <div class="card-top">
+                        <h3>Interactive OOP Pipeline</h3>
+                        <p>A modular real-time rendering engine constructed around strict programmatic polymorphism, memory safety boundaries, and clear class trees.</p>
+                        <div class="tech-tags">
+                            <span class="tech-tag">C++</span>
+                            <span class="tech-tag">SFML</span>
+                            <span class="tech-tag">OOP Logic</span>
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem; width: max-content; transform: translateZ(20px);">Inspect Source</a>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="tilt-wrap card-tilt-wrap">
+                <div class="block-card" data-tilt>
+                    <div class="card-top">
+                        <h3>Algorithmic Data Framework</h3>
+                        <p>Custom structural models designed for highly optimized sorting, tree mutations, and graph-traversal operations directly controlling manual memory.</p>
+                        <div class="tech-tags">
+                            <span class="tech-tag">C++</span>
+                            <span class="tech-tag">Data Structures</span>
+                            <span class="tech-tag">Algorithms</span>
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem; width: max-content; transform: translateZ(20px);">Inspect Source</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Testimonials Slider -->
+    <section id="testimonials" class="container reveal">
+        <h2 class="section-title">03 / Peer Evaluations</h2>
+        <div class="slider-wrapper">
+            <div class="testimonial-slide active">
+                <q>Umer handles software development with an exceptional focus on foundational optimization. His capacity to write elegant code across both full-stack components and low-level system modules is distinctively impactful.</q>
+                <cite>Academic &amp; Operations Assessment Board</cite>
+            </div>
+            <div class="testimonial-slide">
+                <q>The execution speed on his data modeling structures and low-level pipelines is remarkable. He systematically reviews architectural patterns cleanly from step one.</q>
+                <cite>Core Technical Peer Evaluation</cite>
+            </div>
+            <div class="slider-controls">
+                <button class="theme-toggle" id="prevSlide" style="border-radius: 4px; width: 32px; height: 32px;">&larr;</button>
+                <button class="theme-toggle" id="nextSlide" style="border-radius: 4px; width: 32px; height: 32px;">&rarr;</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Framework Structure -->
+    <section id="contact" class="container reveal">
+        <h2 class="section-title">04 / Communication Conduit</h2>
+        <div class="contact-layout">
+            <div class="contact-info">
+                <p>Seeking technical optimization infrastructure or production application architecture updates? Direct your requirements directly through this system terminal channel.</p>
+                <div class="contact-links">
+                    <a href="mailto:umersadan90@gmail.com">Email Direct: umersadan90@gmail.com</a>
+                    <a href="#">Network: https://www.linkedin.com/in/umer-sadan</a>
+                    <a href="#">Source Management: https://github.com/UmerSadan</a>
+                </div>
+            </div>
+            <form onsubmit="event.preventDefault(); alert('Message successfully logged into active pipeline.');">
+                <div class="form-group">
+                    <label for="name">Identifier</label>
+                    <input type="text" id="name" placeholder="Your name or organization" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Return Routing Destination</label>
+                    <input type="email" id="email" placeholder="Your contact email profile" required>
+                </div>
+                <div class="form-group">
+                    <label for="msg">Project Scope Specification</label>
+                    <textarea id="msg" rows="5" placeholder="Detail your computational parameters..." required></textarea>
+                </div>
+                <span class="magnetic"><button type="submit" class="btn btn-primary magnetic-target" style="width: max-content;">Dispatch Transmission</button></span>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Muhammad Umer Sadan. Core Technical Engine Portfolio. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Behavioral JavaScript Logic -->
+    <script>
+        // ====================================================================
+        // 1. Light / Dark Theme Configuration State Machine
+        // ====================================================================
+        const html = document.documentElement;
+        const themeBtn = document.getElementById('themeBtn');
+
+        themeBtn.addEventListener('click', () => {
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                themeBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`;
+            } else {
+                html.classList.remove('light');
+                html.classList.add('dark');
+                themeBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.364 17.636l-.707.707M17.364 17.636l.707.707M6.364 6.364l.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`;
+            }
+        });
+
+        // ====================================================================
+        // 2. Intersection Observer for Fluid On-Scroll Revelations
+        // ====================================================================
+        const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    if (entry.target.id === 'about') {
+                        document.querySelectorAll('.skill-bar-fill').forEach(bar => {
+                            bar.style.width = bar.getAttribute('data-width');
+                        });
+                    }
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // ====================================================================
+        // 3. Testimonial Deck Controller System
+        // ====================================================================
+        const slides = document.querySelectorAll('.testimonial-slide');
+        const next = document.getElementById('nextSlide');
+        const prev = document.getElementById('prevSlide');
+        let currentSlide = 0;
+
+        function updateSlider(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+        }
+
+        next.addEventListener('click', () => {
+            currentSlide = (currentSlide + 1) % slides.length;
+            updateSlider(currentSlide);
+        });
+
+        prev.addEventListener('click', () => {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            updateSlider(currentSlide);
+        });
+
+        // ====================================================================
+        // 4. Interactive Floating-Node Canvas Background
+        //    Vanilla Canvas2D particle field with proximity-based connecting lines.
+        // ====================================================================
+        (function initParticleField() {
+            const canvas = document.getElementById('particles-bg');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let mouse = { x: null, y: null, active: false };
+            let width, height;
+            let reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            if (reduceMotion) return;
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                const density = Math.min(170, Math.floor((width * height) / 9000));
+                particles = [];
+                for (let i = 0; i < density; i++) {
+                    particles.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        vx: (Math.random() - 0.5) * 0.35,
+                        vy: (Math.random() - 0.5) * 0.35,
+                        r: Math.random() * 1.6 + 0.8
+                    });
+                }
+            }
+
+            function step() {
+                ctx.clearRect(0, 0, width, height);
+                const linkDist = 130;
+
+                // Update + draw nodes
+                for (let p of particles) {
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if (p.x < 0 || p.x > width) p.vx *= -1;
+                    if (p.y < 0 || p.y > height) p.vy *= -1;
+
+                    // Gentle attraction toward cursor for a living, interactive feel
+                    if (mouse.active) {
+                        const dx = mouse.x - p.x;
+                        const dy = mouse.y - p.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 160 && dist > 0.1) {
+                            p.x += (dx / dist) * 0.25;
+                            p.y += (dy / dist) * 0.25;
+                        }
+                    }
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, 0.75)`;
+                    ctx.fill();
+                }
+
+                // Connect nearby nodes
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const a = particles[i], b = particles[j];
+                        const dx = a.x - b.x;
+                        const dy = a.y - b.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < linkDist) {
+                            ctx.beginPath();
+                            ctx.moveTo(a.x, a.y);
+                            ctx.lineTo(b.x, b.y);
+                            ctx.strokeStyle = `rgba(255, 255, 255, ${0.28 * (1 - dist / linkDist)})`;
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                requestAnimationFrame(step);
+            }
+
+            window.addEventListener('resize', resize);
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+                mouse.active = true;
+            });
+            window.addEventListener('mouseleave', () => { mouse.active = false; });
+
+            resize();
+            requestAnimationFrame(step);
+        })();
+
+        // ====================================================================
+        // 5. 3D Mouse-Tracking Tilt Effect (Project Cards + Hero Frame)
+        // ====================================================================
+        (function initTilt() {
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reduceMotion) return;
+
+            const tiltEls = document.querySelectorAll('[data-tilt]');
+            const MAX_TILT = 10; // degrees
+
+            tiltEls.forEach(el => {
+                let frame = null;
+
+                el.addEventListener('mousemove', (e) => {
+                    const rect = el.getBoundingClientRect();
+                    const px = (e.clientX - rect.left) / rect.width;
+                    const py = (e.clientY - rect.top) / rect.height;
+
+                    const rotateY = (px - 0.5) * 2 * MAX_TILT;
+                    const rotateX = (0.5 - py) * 2 * MAX_TILT;
+
+                    if (frame) cancelAnimationFrame(frame);
+                    frame = requestAnimationFrame(() => {
+                        el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                        el.style.setProperty('--glow-x', `${px * 100}%`);
+                        el.style.setProperty('--glow-y', `${py * 100}%`);
+                        el.classList.add('tilting');
+                    });
+                });
+
+                el.addEventListener('mouseleave', () => {
+                    if (frame) cancelAnimationFrame(frame);
+                    el.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+                    el.classList.remove('tilting');
+                });
+            });
+        })();
+
+        // ====================================================================
+        // 7. Interactive Wireframe Cube + Live HUD Readout (Hero Frame)
+        // ====================================================================
+        // ====================================================================
+        // 7. Interactive Wireframe Cube (Hero Frame) — rotates with the cursor
+        // ====================================================================
+        (function initHeroCube() {
+            const frame = document.getElementById('heroFrame');
+            const cube = document.getElementById('isoCube');
+            if (!frame || !cube) return;
+
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reduceMotion) return;
+
+            frame.addEventListener('mousemove', (e) => {
+                const rect = frame.getBoundingClientRect();
+                const px = (e.clientX - rect.left) / rect.width;
+                const py = (e.clientY - rect.top) / rect.height;
+
+                const rotateY = (px - 0.5) * 2 * 180;
+                const rotateX = (0.5 - py) * 2 * 60 - 25;
+                cube.classList.add('manual');
+                cube.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+
+            frame.addEventListener('mouseleave', () => {
+                cube.classList.remove('manual');
+                cube.style.transform = '';
+            });
+        })();
+
+        // ====================================================================
+        // 8. Magnetic Pull Micro-Interaction (Primary CTA Buttons)
+        // ====================================================================
+        (function initMagnetic() {
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reduceMotion) return;
+
+            const wrappers = document.querySelectorAll('.magnetic');
+            const STRENGTH = 0.35;
+            const MAX_PULL = 14;
+
+            wrappers.forEach(wrapper => {
+                const target = wrapper.querySelector('.magnetic-target');
+                if (!target) return;
+
+                wrapper.addEventListener('mousemove', (e) => {
+                    const rect = wrapper.getBoundingClientRect();
+                    const relX = e.clientX - (rect.left + rect.width / 2);
+                    const relY = e.clientY - (rect.top + rect.height / 2);
+
+                    const pullX = Math.max(-MAX_PULL, Math.min(MAX_PULL, relX * STRENGTH));
+                    const pullY = Math.max(-MAX_PULL, Math.min(MAX_PULL, relY * STRENGTH));
+
+                    target.style.transform = `translate(${pullX}px, ${pullY}px)`;
+                });
+
+                wrapper.addEventListener('mouseleave', () => {
+                    target.style.transform = 'translate(0, 0)';
+                });
+            });
+        })();
+    </script>   
+</body>
+</html>
